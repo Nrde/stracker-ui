@@ -7,7 +7,7 @@ improved UI for Stracker web interface
  - all laptimes on one page, also possible to scroll table inside it's own container
  - strackers own paging hidden by default
  - sorting for relevant columns
- - tooltip on sector times tells the difference to previous lap time
+ - tooltip on sector times tells the difference to best lap's sectortime
  - slightly bigger AC logo
  
  ## install
