@@ -12,4 +12,6 @@ improved UI for Stracker web interface
  
  ## install
  
- copy directories to the stracker directory replacing the 2 template files, stop and start webserver/stracker script
+  - copy directories to the stracker directory replacing the 2 template files
+  - modify "items_per_page" in stracker.ini to match or exceed expected total laps for example items_per_page = 200 (if you want to prevent paging)
+  - stop and start webserver/stracker script. 
