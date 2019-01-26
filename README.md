@@ -3,9 +3,9 @@ improved UI for Stracker web interface
 
 ## changes
 
- - lap time table uses datatables 
- - all laptimes on one page, also possible to scroll table inside it's own container
- - strackers own paging hidden by default
+ - laptime table uses datatables 
+ - all laptimes on one page, also possible to scroll table inside its own container
+ - stracker's own paging hidden by default
  - sorting for relevant columns
  - tooltip on sector times tells the difference to best lap's sectortime
  - slightly bigger AC logo
