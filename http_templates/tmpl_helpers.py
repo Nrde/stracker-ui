@@ -93,7 +93,6 @@ title="{{uicar}}"
 title="{{brand}}"
 %     end
 class="aids">
-</img>
 % end
 % if needsText:
     {{unbrand(car,uicar)}}
