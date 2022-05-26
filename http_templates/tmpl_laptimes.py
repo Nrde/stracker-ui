@@ -154,7 +154,8 @@ jQuery.extend( jQuery.fn.dataTableExt.oSort, {
     }
 });
 
-// orderable and sorting ignoring text are track specific. 
+// orderable and sorting ignoring text are config specific. 
+// choose column numbers based on your own config
 // sort-numbers-ignore-text is meant for times that may be empty in some cases, like sector times that can be '-'
 $(document).ready( function () {
 
@@ -162,11 +163,10 @@ $(document).ready( function () {
     var doNotSortHeaders = ['Aids', 'Gap to 1st'];
     var doNotSortCols = [];
 
-    // sector times can have '-' so sort them always to the end, stracker DB has sectors up to 9
-    var doNotSortByTextHeaders = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9'];
+    // sector times can have '-' so sort them always to the end, add more sector times if needed
+    var doNotSortByTextHeaders = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6'];
     var doNotSortByTextCols = [];
 
-    // how many special columns and where do we have them
     $( "#lapstable thead tr th" ).each(function( index ) {
 
         if(jQuery.inArray($( this ).text(), doNotSortHeaders) != -1) {
@@ -179,7 +179,7 @@ $(document).ready( function () {
 
     });
 
-    var t = $('#lapstable').DataTable({
+   var t = $('#lapstable').DataTable({
         "columnDefs": [
             {
                 orderable: false,
@@ -194,7 +194,7 @@ $(document).ready( function () {
             { type: 'sort-numbers-ignore-text', targets: doNotSortByTextCols}
         ],
         "order": [[ 1, 'asc' ]],
-            // uncomment in case you want to have a inline scrollable table instead 
+            // uncomment in case you want to have a inline scrollable table instead
             //scrollY:        '50vh',
             //scrollCollapse: true,
             paging:         false
@@ -219,11 +219,12 @@ $(document).ready( function () {
 } );
 </script>
 
-<div class="container">
+<div class="container" style="background-image: url('/img/banner_med.png');
+                              background-repeat: no-repeat;
+                              background-position: 10px 10px;">
   <div class="page-header">
     <div class="row">
         <div class="col-md-6">
-            <img src="/img/banner_med.png" title="Logo Track" class="ACimg">
         </div>
         <div class="col-md-6">
             <form class="form-horizontal collapse-group" role="form">
@@ -397,103 +398,157 @@ $(document).ready( function () {
                 <th>Car</th>
                 <th>Best lap</th>
                 <th>Gap to 1st</th>
+                
 % from ptracker_lib.helpers import isProMode, format_time_ms, format_datetime, unixtime2datetime, format_vel, format_temp
 % for i in range(count):
-                <th>{{'S%d' % (i+1)}}</th>
+              <th>{{'S%d' % (i+1)}}</th>
 % end
-%
-% def collisions(r):
-%     cEnv = r.get('collenv', None)
-%     cCar = r.get('collcar', None)
-%     if cEnv is None or cCar is None: res = '-'
-%     else: res = str(cEnv+cCar)
-%     end
-%     res = res + "("
-%     if cCar is None: res += "-"
-%     else: res += str(cCar)
-%     end
-%     res += ")"
-%     return res
-% end
-%
-% def temps(r):
-%     tAmb = r.get('tempAmbient', None)
-%     tTrack = r.get('tempTrack', None)
-%     res = '-' if tAmb is None else (format_temp(tAmb))
-%     res += "/"
-%     res += '-' if tTrack is None else (format_temp(tTrack))
-%     return res
-% end
-%
-% def format_tyre(r):
-%     if r is None:
-%        return "-"
-%     end
-%     import re
-%     s = re.sub(r'.*\((.*)\)', r'\\1', r)
-%     s = '?' if s == r else s
-%     return s
-% end
-%
-% add_columns = config.config.HTTP_CONFIG.lap_times_add_columns.split("+")
-% add_columns_disp = {
-%   'valid' : ('Valid', lambda r: ['no','yes','-'][r['valid']]),
-%   'aids' : ('Aids', None),
-%   'laps' : ('Laps', lambda r: r['numLaps']),
-%   'date' : ('Date', lambda r: '-' if r.get('timeStamp', None) is None else format_datetime(unixtime2datetime(r.get('timeStamp', None)))),
-%   'grip' : ('Grip', lambda r: '-' if r.get('grip', None) is None else "%.1f%%" % (r['grip']*100.)),
-%   'cuts' : ('Cuts', lambda r: '-' if r.get('cuts', None) is None else r['cuts']),
-%   'collisions' : ('Crashes (car/car)', lambda r: collisions(r)),
-%   'tyres' : ('Tyres', lambda r: format_tyre(r.get('tyres', None))),
-%   'temps' : ('Amb./Track', lambda r: temps(r)),
-%   'ballast': ('Ballast', lambda r: "-" if r.get('ballast', None) is None else "%.1f kg" % r['ballast'] ),
-%   'vmax': ('vMax', lambda r: "-" if r.get('maxSpeed', None) is None else format_vel(r['maxSpeed'])),
-% }
-% for c in add_columns:
-                <th>{{add_columns_disp[c][0]}}</th>
-% end
-            </tr>
-            </thead>
-            <tbody>
-% for i, r in enumerate(lapStatRes):
-%   if r['bestServerLap']:
-%       c = 'class="bestLap" '
-%   else:
-%       c = ''
-%   end
-            <tr class='clickableRow' href="lapdetails?lapid={{"%d" % r['id']}}#">
-                <td></td>
-                <td {{!c}}>{{"%d." % r['pos']}}</td>
-                <td {{!c}}>{{r['name']}}</td>
-                <td {{!c}}>
-                    {{!car_tmpl.render(car=r['car'], uicar=r['uicar'])}}
-                </td>
-                <td {{!c}}>{{format_time_ms(r['lapTime'], False)}}</td>
-                <td {{!c}}>{{format_time_ms(r['gapToBest'], True)}}</td>
 
-% for si in range(count):
-    % s = format_time_ms(r['sectors'][si], False)
-    % gapdir = ''
-    % if r['sectors'][si] == bestSectors[si]:
-    %   c = 'class="bestSector" '
-    %   gap = 0
-    % else:
-    %   c = ''
-    %   
-    %   if r['sectors'][si] is None:
-    %       s = "-"
-    %       gap = "-"
-    %   else:
-    %       gapdir = '+' if r['sectors'][si] > bestSectors[si] else '-'
-    %       if r['sectors'][si] > bestSectors[si]:
-    %           gap = format_time_ms(r['sectors'][si] - bestSectors[si], False)
-    %       else:
-    %           gap = format_time_ms(bestSectors[si] - r['sectors'][si], False)
-    %       end
-    %   end
-    % end
-                <td {{!c}} title='{{gapdir}}{{gap}}'>{{s}}</td>
+<% 
+def collisions(r):
+    cEnv = r.get('collenv', None)
+    cCar = r.get('collcar', None)
+    if cEnv is None or cCar is None: res = '-'
+    else: res = str(cEnv+cCar)
+    end
+    res = res + "("
+    if cCar is None: res += "-"
+    else: res += str(cCar)
+    end
+    res += ")"
+    return res
+end
+
+def temps(r):
+    tAmb = r.get('tempAmbient', None)
+    tTrack = r.get('tempTrack', None)
+    res = '-' if tAmb is None else (format_temp(tAmb))
+    res += "/"
+    res += '-' if tTrack is None else (format_temp(tTrack))
+    return res
+end
+
+def format_tyre(r):
+    if r is None:
+       return "-"
+    end
+    import re
+    s = re.sub(r'.*\((.*)\)', r'\\1', r)
+    s = '?' if s == r else s
+    return s
+end
+
+add_columns = config.config.HTTP_CONFIG.lap_times_add_columns.split("+")
+add_columns_disp = {
+  'valid' : ('Valid', lambda r: ['no','yes','-'][r['valid']]),
+  'aids' : ('Aids', None),
+  'laps' : ('Laps', lambda r: r['numLaps']),
+  'date' : ('Date', lambda r: '-' if r.get('timeStamp', None) is None else format_datetime(unixtime2datetime(r.get('timeStamp', None)))),
+  'grip' : ('Grip', lambda r: '-' if r.get('grip', None) is None else "%.1f%%" % (r['grip']*100.)),
+  'cuts' : ('Cuts', lambda r: '-' if r.get('cuts', None) is None else r['cuts']),
+  'collisions' : ('Crashes (car/car)', lambda r: collisions(r)),
+  'tyres' : ('Tyres', lambda r: format_tyre(r.get('tyres', None))),
+  'temps' : ('Amb./Track', lambda r: temps(r)),
+  'ballast': ('Ballast', lambda r: "-" if r.get('ballast', None) is None else "%.1f kg" % r['ballast'] ),
+  'vmax': ('vMax', lambda r: "-" if r.get('maxSpeed', None) is None else format_vel(r['maxSpeed'])),
+}
+%>
+%for c in add_columns:
+              <th>{{add_columns_disp[c][0]}}</th>
+%end
+          </tr>
+          </thead>
+          <tbody>
+
+<%
+prevsector = [[]]
+for i, r in enumerate(lapStatRes):
+  prevsector.append([])
+  if r['bestServerLap']:
+      c = 'class="bestLap" '
+  else:
+      c = ''
+  end
+%>
+    <tr class='clickableRow' href="lapdetails?lapid={{"%d" % r['id']}}#">
+        <td></td>
+        <td>{{"%d." % r['pos']}}</td>
+        <td>{{r['name']}}</td>
+        <td>
+            {{!car_tmpl.render(car=r['car'], uicar=r['uicar'])}}
+        </td>
+        <td {{!c}}>{{format_time_ms(r['lapTime'], False)}}</td>
+        <td>{{format_time_ms(r['gapToBest'], True)}}</td>
+
+<% for si in range(count):
+    s = format_time_ms(r['sectors'][si], False)
+
+    gapdirprev = ''
+    gaptoprev = ''
+    to_best = ''
+    to_prev = ''
+    prevsector[i].insert(si, r['sectors'][si])
+    #prevsector[i].append(r['sectors'][si])
+    if r['sectors'][si] == bestSectors[si]:
+        c = 'class="bestSector" '
+        gap = 0
+        gaptobest = 0
+        gapdirbest = ''
+        gapdir = ''
+        gapdirprev = ''
+    else:
+        c = ''
+        if r['sectors'][si] is None:
+          s = "-"
+        else:
+        
+            if r['sectors'][si] > bestSectors[si]:
+                gapdirbest = '+' 
+                gaptobest = format_time_ms(r['sectors'][si] - bestSectors[si], False)
+            elif bestSectors[si] > r['sectors'][si]:
+                gapdirbest = '-'
+                gaptobest = format_time_ms(bestSectors[si] - r['sectors'][si], False)
+            else:
+                gaptopbest = 0
+                gapdirbest = ''
+            end
+            
+            if gaptobest == 0:
+                to_best = ''
+            else:
+                to_best = 'Gap to best: '+gapdirbest+gaptobest+'<br/>'
+            end
+                
+                
+                
+                
+                        
+            if i > 0:
+                if r['sectors'][si] > prevsector[i-1][si]:
+                    gapdirprev = '+' 
+                    gaptoprev = format_time_ms(r['sectors'][si] - prevsector[i-1][si], False)
+                else:
+                    gapdirprev = '-'
+                    gaptoprev = format_time_ms(prevsector[i-1][si] - r['sectors'][si], False)
+                end
+                to_prev = 'Gap to prev: '+gapdirprev+gaptoprev
+            else:
+              to_prev = ''
+            end
+            
+        end
+    end 
+    
+    tooltip = to_best+to_prev
+    
+    if tooltip == '':
+%>
+    <td {{!c}}>{{s}}</td>
+%   else:
+    <td {{!c}} data-html="true" data-toggle="tooltip" title='{{tooltip}}'>{{s}}</td>
+%   end
 % end
+
 %
 % def adaptClassBool(x, r, hasFacSetting=False):
 %     v = r.get(x, None)
@@ -522,7 +577,7 @@ $(document).ready( function () {
                     <a class="aids idealline {{adaptClassBool('idealLine', r)}}" title="Ideal racing line {{adaptClassBool('idealLine', r)}}"></a>
                     <a class="aids tc {{adaptClassBool('tractionControl', r, True)}}" title="Traction control {{adaptClassBool('tractionControl', r, True)}}"></a>
                 </div></td>
-%   end
+% end
 % end
             </tr>
 % end
@@ -654,7 +709,7 @@ function confirmDBChangeBeforeLink(l, msg)
     </div>
     <div class="row">
         <div class="col-md-3">
-       
+    
 % def entry(key, conv=str):
 %    v = lapdetails.get(key, None)
 %    if v is None:
@@ -664,7 +719,7 @@ function confirmDBChangeBeforeLink(l, msg)
 %    end
 %    return v
 % end
-            <table class="table table-striped table-condensed table-bordered table-hover">
+            <table id="driver-combo-table" class="table table-striped table-condensed table-bordered table-hover">
                 <caption>Driver/combo information</caption>
                 <tbody>
                     <tr><td>Name</td><td>{{lapdetails['name']}}</td></tr>
@@ -683,7 +738,7 @@ function confirmDBChangeBeforeLink(l, msg)
             </table>
         </div>
         <div class="col-md-3">
-             <table class="table table-striped table-condensed table-bordered table-hover">
+             <table id="lap-information" class="table table-striped table-condensed table-bordered table-hover">
               <caption>Lap information</caption>
                 <tbody>
                     <tr><td>Lap time</td><td>{{format_time_ms(lapdetails['laptime'], False)}}</td></tr>
@@ -719,7 +774,7 @@ function confirmDBChangeBeforeLink(l, msg)
             </table>
         </div>
         <div class="col-md-3">
-            <table class="table table-striped table-condensed table-bordered table-hover">
+            <table id="session-information" class="table table-striped table-condensed table-bordered table-hover">
                 <caption>Session information</caption>
                 <tbody>
                     <tr><td>Penalties</td><td>{{entry("penaltiesenabled", lambda x: ["no", "yes"][x])}}</td></tr>
@@ -753,7 +808,7 @@ function confirmDBChangeBeforeLink(l, msg)
             </table>
         </div>
         <div class="col-md-3">
-            <table class="table table-striped table-condensed table-bordered table-hover">
+            <table id="aid-information" class="table table-striped table-condensed table-bordered table-hover">
                 <caption>Aid information</caption>
                 <tbody>
 % def levelAidToStr(enabledKey, usedKey):
@@ -912,4 +967,3 @@ $('[data-toggle="tooltip"]').tooltip({
 
 </script>
 """)
-

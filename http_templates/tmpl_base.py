@@ -308,10 +308,9 @@ baseTemplate = SimpleTemplate("""
 % end
         </div>
         <div class="col-sm-3">
-                <p class="navbar-text navbar-right">
-                   {{"v"+features['version']}} provided by <b>Neys</b>
-                </p>
-        </ul>
+            <p class="navbar-text navbar-right">
+               {{"v"+features['version']}} provided by <b>Neys</b>
+            </p>
     </div>
 </nav>
 <!--</div>-->
