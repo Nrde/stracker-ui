@@ -481,75 +481,75 @@ for i, r in enumerate(lapStatRes):
         <td>{{format_time_ms(r['gapToBest'], True)}}</td>
 
 <% for si in range(count):
-    s = format_time_ms(r['sectors'][si], False)
-
-    gapdirprev = ''
-    gaptoprev = ''
-    to_best = ''
-    to_prev = ''
-    prevsector[i].insert(si, r['sectors'][si])
-    #prevsector[i].append(r['sectors'][si])
-    if r['sectors'][si] == bestSectors[si]:
-        c = 'class="bestSector" '
-        gap = 0
-        gaptobest = 0
-        gapdirbest = ''
-        gapdir = ''
+      
+    if r['sectors'][si] is not None and bestSectors[si] is not None:
+        s = format_time_ms(r['sectors'][si], False)
         gapdirprev = ''
-    else:
-        c = ''
-        if r['sectors'][si] is None:
-          s = "-"
+        gaptoprev = ''
+        to_best = ''
+        to_prev = ''
+        prevsector[i].insert(si, r['sectors'][si])
+        #prevsector[i].append(r['sectors'][si])
+        if r['sectors'][si] == bestSectors[si]:
+            c = 'class="bestSector" '
+            gap = 0
+            gaptobest = 0
+            gapdirbest = ''
+            gapdir = ''
+            gapdirprev = ''
         else:
-        
-            if r['sectors'][si] > bestSectors[si]:
-                gapdirbest = '+' 
-                gaptobest = format_time_ms(r['sectors'][si] - bestSectors[si], False)
-            elif bestSectors[si] > r['sectors'][si]:
-                gapdirbest = '-'
-                gaptobest = format_time_ms(bestSectors[si] - r['sectors'][si], False)
-            else:
-                gaptopbest = 0
-                gapdirbest = ''
-            end
+            c = ''
+        end 
             
-            if gaptobest == 0:
-                to_best = ''
-            else:
-                to_best = 'Gap to best: '+gapdirbest+gaptobest+'<br/>'
-            end
-                
-                
-                
-                
-                        
-            if i > 0:
-                if r['sectors'][si] > prevsector[i-1][si]:
-                    gapdirprev = '+' 
-                    gaptoprev = format_time_ms(r['sectors'][si] - prevsector[i-1][si], False)
-                else:
-                    gapdirprev = '-'
-                    gaptoprev = format_time_ms(prevsector[i-1][si] - r['sectors'][si], False)
-                end
-                to_prev = 'Gap to prev: '+gapdirprev+gaptoprev
-            else:
-              to_prev = ''
-            end
-            
+        if r['sectors'][si] > bestSectors[si]:
+            gapdirbest = '+' 
+            gaptobest = format_time_ms(r['sectors'][si] - bestSectors[si], False)
+        elif bestSectors[si] > r['sectors'][si]:
+            gapdirbest = '-'
+            gaptobest = format_time_ms(bestSectors[si] - r['sectors'][si], False)
+        else:
+            gaptopbest = 0
+            gapdirbest = ''
         end
-    end 
+        if gaptobest == 0:
+            to_best = ''
+        else:
+            to_best = 'Gap to best: '+gapdirbest+gaptobest+'<br/>'
+        end
+                    
+        if i > 0 and prevsector[i-1][si] is not None:
+            if prevsector[i-1][si] == 0:
+                gapdirprev = 'n/a' 
+                gaptoprev = ''
+            elif r['sectors'][si] > prevsector[i-1][si]:
+                gapdirprev = '+' 
+                gaptoprev = format_time_ms(r['sectors'][si] - prevsector[i-1][si], False)
+            else:
+                gapdirprev = '-'
+                gaptoprev = format_time_ms(prevsector[i-1][si] - r['sectors'][si], False)
+            end
+            to_prev = 'Gap to prev: '+gapdirprev+gaptoprev
+        else:
+          to_prev = ''
+        end
     
-    tooltip = to_best+to_prev
+        tooltip = to_best+to_prev
+        
+    else:
+        s = "-"
+        tooltip = ''
+        prevsector[i].insert(si, 0)
+    end
     
     if tooltip == '':
 %>
-    <td {{!c}}>{{s}}</td>
-%   else:
-    <td {{!c}} data-html="true" data-toggle="tooltip" title='{{tooltip}}'>{{s}}</td>
-%   end
+        <td {{!c}}>{{s}}</td>
+    %else:
+        <td {{!c}} data-html="true" data-toggle="tooltip" title='{{tooltip}}'>{{s}}</td>
+    %end
+    
 % end
 
-%
 % def adaptClassBool(x, r, hasFacSetting=False):
 %     v = r.get(x, None)
 %     if v is None:
