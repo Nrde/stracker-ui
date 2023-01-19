@@ -3,7 +3,8 @@ improved UI for Stracker web interface
 
 ## changes
 
- - laptime table uses datatables 
+ - laptime table uses datatables
+ - filtering, searching
  - all laptimes on one page, also possible to scroll table inside its own container
  - stracker's own paging hidden by default
  - sorting for relevant columns
